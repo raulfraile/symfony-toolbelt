@@ -65,7 +65,7 @@ MESSAGE
 );
     }
 
-    protected function download($targetPath)
+    private function download($targetPath)
     {
         // TODO: show a progressbar when downloading the file
         $response = \GuzzleHttp\get('http://symfony.com/download?v=Symfony_Standard_Vendors_2.5.3.zip');
@@ -74,7 +74,7 @@ MESSAGE
         return $this;
     }
 
-    protected function extract($zipFilePath, $projectDir)
+    private function extract($zipFilePath, $projectDir)
     {
         $archive = new ZipArchive;
 
@@ -87,7 +87,7 @@ MESSAGE
         return $this;
     }
 
-    protected function cleanUp($zipFile)
+    private function cleanUp($zipFile)
     {
         $this->fs->remove($zipFile);
 
