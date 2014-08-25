@@ -50,7 +50,7 @@ class NewCommand extends Command
              ->extract($zipFilePath, $dir)
              ->cleanUp($zipFilePath);
 
-        $output->writeln(<<<MESSAGE
+        $message = <<<MESSAGE
 
  <info>✔</info>  Symfony was <info>successfully installed</info>. Now you can:
 
@@ -61,8 +61,13 @@ class NewCommand extends Command
         2. Browse to the <comment>http://localhost:8000</comment> URL.
 
     * Read the documentation at symfony.com/doc
-MESSAGE
-);
+MESSAGE;
+
+        if (defined('PHP_WINDOWS_VERSION_BUILD')) {
+            $message = str_replace('✔', 'OK', $message);
+        }
+
+        $output->writeln($message);
     }
 
     private function download($targetPath)
