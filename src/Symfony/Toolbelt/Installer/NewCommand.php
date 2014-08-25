@@ -96,6 +96,7 @@ MESSAGE;
                     return str_pad($this->formatSize($bar->getStep()), 10, ' ', STR_PAD_LEFT);
                 });
                 $progressBar = new ProgressBar($output, $size);
+                $progressBar->setRedrawFrequency(max(1, floor($size / 1000)));
                 $progressBar->start();
             }
 
