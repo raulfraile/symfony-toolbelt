@@ -1,0 +1,24 @@
+{
+    "name": "javiereguiluz/symfony-installer",
+    "description": "Symfony installer.",
+    "keywords": ["symfony", "php", "installer"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Javier Eguiluz",
+            "email": "javier.eguiluz@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": ["src"]
+    },
+    "require": {
+        "guzzlehttp/guzzle": "~4.0",
+        "symfony/console": "~2.5",
+        "symfony/filesystem": "~2.5"
+    },
+    "bin": [
+        "symfony"
+    ],
+    "minimum-stability": "stable"
+}
