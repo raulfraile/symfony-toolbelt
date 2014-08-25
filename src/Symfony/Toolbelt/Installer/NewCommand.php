@@ -46,9 +46,13 @@ class NewCommand extends Command
 
         $zipFilePath = $dir.DIRECTORY_SEPARATOR.'.symfony_'.uniqid(time()).'.zip';
 
-        $this->download($zipFilePath)
-             ->extract($zipFilePath, $dir)
-             ->cleanUp($zipFilePath);
+        $this->download($zipFilePath);
+
+        $output->writeln(' Preparing project...');
+
+        $this->extract($zipFilePath, $dir);
+
+        $this->cleanUp($zipFilePath, $dir);
 
         $message = <<<MESSAGE
 
@@ -87,14 +91,24 @@ MESSAGE;
         $archive->extractTo($projectDir);
         $archive->close();
 
-        $this->fs->mirror($projectDir.DIRECTORY_SEPARATOR.'Symfony', $projectDir);
+        $extractionDir = $projectDir.DIRECTORY_SEPARATOR.'Symfony';
+
+        $iterator = new \FilesystemIterator($extractionDir);
+
+        /** @var \SplFileInfo $file */
+        foreach ($iterator as $file) {
+            $subPath = $this->fs->makePathRelative($file->getRealPath(), $extractionDir);
+
+            $this->fs->rename($file->getRealPath(), $projectDir.DIRECTORY_SEPARATOR.$subPath);
+        }
 
         return $this;
     }
 
-    private function cleanUp($zipFile)
+    private function cleanUp($zipFile, $projectDir)
     {
         $this->fs->remove($zipFile);
+        $this->fs->remove($projectDir.DIRECTORY_SEPARATOR.'Symfony');
 
         return $this;
     }
