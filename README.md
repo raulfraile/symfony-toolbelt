@@ -23,3 +23,9 @@ $ symfony new blog/
 The you have to wait a few seconds (usually less than 10) and you'll see a beautiful and helpful message as result. Here it is a recording of the actual working of this new installer.
 
 ![A proposed Symfony installer](doc/img/awesome_symfony_installer.gif)
+
+By default, the new project is created using the latest Symfony version. If you want to install a specific version, provide it as the second optional argument:
+
+```bash
+$ symfony new blog/ 2.2.5
+```
