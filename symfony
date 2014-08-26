@@ -3,7 +3,12 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-$app = new Symfony\Component\Console\Application('Symfony Toolbelt', '1.0');
+$appVersion = '1.0';
+
+$app = new Symfony\Component\Console\Application('Symfony Toolbelt', $appVersion);
+$app->add(new Symfony\Toolbelt\HelpCommand($appVersion));
 $app->add(new Symfony\Toolbelt\Installer\NewCommand());
+
+$app->setDefaultCommand('help');
 
 $app->run();
