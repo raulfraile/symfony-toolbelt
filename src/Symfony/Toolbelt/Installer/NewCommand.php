@@ -132,6 +132,9 @@ MESSAGE;
         /** @var \SplFileInfo $file */
         foreach ($iterator as $file) {
             $subPath = $this->fs->makePathRelative($file->getRealPath(), $extractionDir);
+            if (!is_dir($file)) {
+                $subPath = rtrim($subPath, '/');
+            }
 
             $this->fs->rename($file->getRealPath(), $projectDir.DIRECTORY_SEPARATOR.$subPath);
         }
