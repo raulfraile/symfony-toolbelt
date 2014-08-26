@@ -20,7 +20,7 @@ The **new Symfony installer** aims to drastically simplify this process. To star
 $ symfony new blog/
 ```
 
-The you have to wait a few seconds (usually less than 10) and you'll see a beautiful and helpful message as result. Here it is a recording of the actual working of this new installer.
+Then you have to wait a few seconds (usually less than 10) and you'll see a beautiful and helpful message as result. Here it is a recording of the actual working of this new installer.
 
 ![A proposed Symfony installer](doc/img/awesome_symfony_installer.gif)
 
