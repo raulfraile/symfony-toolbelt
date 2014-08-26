@@ -103,9 +103,12 @@ MESSAGE;
                 $progressBar = new ProgressBar($output, $size);
                 $progressBar->setRedrawFrequency(max(1, floor($size / 1000)));
 
-                $progressBar->setEmptyBarCharacter('░');
-                $progressBar->setProgressCharacter('▏');
-                $progressBar->setBarCharacter('▋');
+                if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
+                    $progressBar->setEmptyBarCharacter('░');
+                    $progressBar->setProgressCharacter('▏');
+                    $progressBar->setBarCharacter('▋');
+                }
+
                 $progressBar->setBarWidth(60);
 
                 $progressBar->start();
@@ -121,6 +124,7 @@ MESSAGE;
         $this->fs->dumpFile($targetPath, $response->getBody());
 
         if (null !== $progressBar) {
+            $progressBar->finish();
             $output->writeln("\n");
         }
 
