@@ -30,9 +30,9 @@ class NewCommand extends Command
         $this
             ->setName('new')
             ->setDescription('Creates a new Symfony project.')
-            ->addArgument('name', InputArgument::REQUIRED)
-            // TODO: allow to select the Symfony version
-            // ->addArgument('version', InputArgument::OPTIONAL)
+            ->addArgument('name', InputArgument::REQUIRED, 'The name of the new Symfony project (a new folder will be created)')
+            // TODO: symfony.com/download should provide a latest.zip version to simplify things
+            ->addArgument('version', InputArgument::OPTIONAL, 'The Symfony version used in the project', '2.5.3')
         ;
     }
 
@@ -46,13 +46,16 @@ class NewCommand extends Command
 
         $this->fs->mkdir($dir);
 
-        // TODO: verify the format of the Symfony version
+        $symfonyVersion = $input->getArgument('version');
+        if (!preg_match('/2\.\d.\d+/', $symfonyVersion)) {
+            throw new \RuntimeException("The Symfony version should be 2.N.M, where N = 1..9 and M = 0..99");
+        }
 
         $output->writeln("\n Downloading Symfony...");
 
         $zipFilePath = $dir.DIRECTORY_SEPARATOR.'.symfony_'.uniqid(time()).'.zip';
 
-        $this->download($zipFilePath, $output);
+        $this->download($zipFilePath, $symfonyVersion, $output);
 
         $output->writeln(' Preparing project...');
 
@@ -81,7 +84,7 @@ MESSAGE;
         $output->writeln($message);
     }
 
-    private function download($targetPath, OutputInterface $output)
+    private function download($targetPath, $symfonyVersion, OutputInterface $output)
     {
         $progressBar = null;
         $downloadCallback = function ($size, $downloaded, $client, $request, Response $response) use ($output, &$progressBar) {
@@ -114,7 +117,7 @@ MESSAGE;
         $client = new Client();
         $client->getEmitter()->attach(new Progress(null, $downloadCallback));
 
-        $response = $client->get('http://symfony.com/download?v=Symfony_Standard_Vendors_2.5.3.zip');
+        $response = $client->get('http://symfony.com/download?v=Symfony_Standard_Vendors_'.$symfonyVersion.'.zip');
         $this->fs->dumpFile($targetPath, $response->getBody());
 
         if (null !== $progressBar) {
