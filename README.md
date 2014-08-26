@@ -29,3 +29,16 @@ By default, the new project is created using the latest Symfony version. If you 
 ```bash
 $ symfony new blog/ 2.2.5
 ```
+
+If this Symfony Toolbelt is accepted officially, its use would be as simple as follows (this doesn't work right now):
+
+```
+# install the toolbelt (do this only once)
+$ composer global require "symfony/toolbelt=~1.0"
+
+# use the toolbelt (global command available everywhere)
+$ symfony
+
+# update the toolbelt
+$ symfony self-update
+```
