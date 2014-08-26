@@ -73,7 +73,7 @@ class NewCommand extends Command
         1. Execute the <comment>php app/console server:run</comment> command.
         2. Browse to the <comment>http://localhost:8000</comment> URL.
 
-    * Read the documentation at symfony.com/doc
+    * Read the documentation at <comment>http://symfony.com/doc</comment>
 
 MESSAGE;
 
