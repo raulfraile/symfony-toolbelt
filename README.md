@@ -40,5 +40,5 @@ $ composer global require "symfony/toolbelt=~1.0"
 $ symfony
 
 # update the toolbelt
-$ symfony self-update
+$ composer global update symfony/toolbelt
 ```
