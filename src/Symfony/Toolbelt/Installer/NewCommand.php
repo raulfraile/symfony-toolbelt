@@ -2,13 +2,16 @@
 
 namespace Symfony\Toolbelt\Installer;
 
-use ZipArchive;
+use GuzzleHttp\Client;
+use GuzzleHttp\Message\Response;
+use GuzzleHttp\Subscriber\Progress\Progress;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use ZipArchive;
 
 /*
  * This class is heavily inspired by Laravel Installer and
@@ -17,6 +20,9 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class NewCommand extends Command
 {
+    /**
+     * @var Filesystem
+     */
     private $fs;
 
     protected function configure()
@@ -46,8 +52,11 @@ class NewCommand extends Command
 
         $zipFilePath = $dir.DIRECTORY_SEPARATOR.'.symfony_'.uniqid(time()).'.zip';
 
-        $this->download($zipFilePath)
-             ->extract($zipFilePath, $dir)
+        $this->download($zipFilePath, $output);
+
+        $output->writeln(' Preparing project...');
+
+        $this->extract($zipFilePath, $dir)
              ->cleanUp($zipFilePath);
 
         $message = <<<MESSAGE
@@ -70,11 +79,39 @@ MESSAGE;
         $output->writeln($message);
     }
 
-    private function download($targetPath)
+    private function download($targetPath, OutputInterface $output)
     {
-        // TODO: show a progressbar when downloading the file
-        $response = \GuzzleHttp\get('http://symfony.com/download?v=Symfony_Standard_Vendors_2.5.3.zip');
+        $progressBar = null;
+        $downloadCallback = function ($size, $downloaded, $client, $request, Response $response) use ($output, &$progressBar) {
+            // Don't initialize the progress bar for redirects as the size is much smaller
+            if ($response->getStatusCode() >= 300) {
+                return;
+            }
+
+            if (null === $progressBar) {
+                ProgressBar::setPlaceholderFormatterDefinition('max', function (ProgressBar $bar) {
+                    return $this->formatSize($bar->getMaxSteps());
+                });
+                ProgressBar::setPlaceholderFormatterDefinition('current', function (ProgressBar $bar) {
+                    return str_pad($this->formatSize($bar->getStep()), 10, ' ', STR_PAD_LEFT);
+                });
+                $progressBar = new ProgressBar($output, $size);
+                $progressBar->setRedrawFrequency(max(1, floor($size / 1000)));
+                $progressBar->start();
+            }
+
+            $progressBar->setCurrent($downloaded);
+        };
+
+        $client = new Client();
+        $client->getEmitter()->attach(new Progress(null, $downloadCallback));
+
+        $response = $client->get('http://symfony.com/download?v=Symfony_Standard_Vendors_2.5.3.zip');
         $this->fs->dumpFile($targetPath, $response->getBody());
+
+        if (null !== $progressBar) {
+            $progressBar->clear();
+        }
 
         return $this;
     }
@@ -97,5 +134,18 @@ MESSAGE;
         $this->fs->remove($zipFile);
 
         return $this;
+    }
+
+    private function formatSize($bytes)
+    {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = $bytes ? floor(log($bytes, 1024)) : 0;
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, 2) . ' ' . $units[$pow];
     }
 }

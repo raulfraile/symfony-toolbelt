@@ -15,6 +15,7 @@
     "require": {
         "ext-zip": "*",
         "guzzlehttp/guzzle": "~4.0",
+        "guzzlehttp/progress-subscriber": "~1.1",
         "symfony/console": "~2.5",
         "symfony/filesystem": "~2.5"
     },
