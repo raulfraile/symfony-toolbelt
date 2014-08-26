@@ -5,12 +5,11 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Javier Eguiluz",
-            "email": "javier.eguiluz@gmail.com"
+            "name": "Symfony Community"
         }
     ],
     "autoload": {
-        "classmap": ["src"]
+        "psr-4": { "Symfony\\": "src/" }
     },
     "require": {
         "ext-zip": "*",
