@@ -71,6 +71,7 @@ class NewCommand extends Command
         2. Browse to the <comment>http://localhost:8000</comment> URL.
 
     * Read the documentation at symfony.com/doc
+
 MESSAGE;
 
         if (defined('PHP_WINDOWS_VERSION_BUILD')) {
@@ -98,6 +99,12 @@ MESSAGE;
                 });
                 $progressBar = new ProgressBar($output, $size);
                 $progressBar->setRedrawFrequency(max(1, floor($size / 1000)));
+
+                $progressBar->setEmptyBarCharacter('░');
+                $progressBar->setProgressCharacter('▏');
+                $progressBar->setBarCharacter('▋');
+                $progressBar->setBarWidth(60);
+
                 $progressBar->start();
             }
 
@@ -111,7 +118,7 @@ MESSAGE;
         $this->fs->dumpFile($targetPath, $response->getBody());
 
         if (null !== $progressBar) {
-            $progressBar->clear();
+            $output->writeln("\n");
         }
 
         return $this;
